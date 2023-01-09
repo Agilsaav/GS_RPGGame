@@ -2,7 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "GSAttribute.h"
+#include "Misc/Optional.h"
 #include "GSAttributeSet.generated.h"
+
+class UGSActionComponent;
 
 /**
  * 
@@ -11,5 +15,54 @@ UCLASS()
 class GS_RPGGAME_API UGSAttributeSet : public UObject
 {
 	GENERATED_BODY()
-	
+public:
+	/**
+	* Inititalize the object.
+	*/
+	void Initialize(UGSActionComponent* NewActionComp);
+
+	/**
+	* Applies a change to an existing attribute. Return true if the attribute changes, false otherwise.
+	*/
+	UFUNCTION(BlueprintCallable)
+	bool ApplyAttributeChange(const FAttributeModification& AttributeMod);
+
+	/**
+	* Returns true if the attribute is found, and the parameter OutAttribute is the desired attribute.
+	*/
+	UFUNCTION(BlueprintCallable)
+	bool GetAttribute(FGameplayTag AttributeTag, FAttribute& OutAttribute);
+
+	/**
+	* Returns the value of an attribute. If the attribute does not exist returns 0.
+	*/
+	UFUNCTION(BlueprintCallable)
+	float GetAttributeValue(FGameplayTag AttributeTag);
+
+	/**
+	* Returns the owning component.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Action")
+	UGSActionComponent* GetOwningComponent() const;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Attributes")
+	FAttribute Health;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Attributes")
+	FAttribute MaxHealth {100.0f};
+
+private:
+	/**
+	* Apply rules reacting from a change made to an attribute can be override.
+	*/
+	virtual void PostAttributeChange(const FAttributeModification& AttributeMod);
+
+	/**
+	* Search the attribute name using the gameplay tag.
+	* Returns the attribute name if it is found , otherwise returns a non set optional object.
+	*/
+	TOptional<FName> GetAttributeName(FGameplayTag AttributeTag) const;
+
+	UPROPERTY()
+	UGSActionComponent* ActionComp;
 };
