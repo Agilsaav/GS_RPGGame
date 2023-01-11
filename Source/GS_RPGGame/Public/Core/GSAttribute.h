@@ -6,6 +6,48 @@
 
 class UGSActionComponent;
 
+UENUM(BlueprintType)
+enum class EAttributeChangeType : uint8
+{
+	None,
+	Override,
+	Add
+};
+
+/**
+* Struct used to notify a change in an existing attribute
+*/
+USTRUCT(BlueprintType)
+struct FAttributeChangeDetails
+{
+	GENERATED_BODY();
+
+	FAttributeChangeDetails() = default;
+
+	FAttributeChangeDetails(UGSActionComponent* OwnerComponent, UGSActionComponent* InstigatorComponent, float New, float Old, FGameplayTag Tag, EAttributeChangeType Change) :
+		OwnerComp(OwnerComponent), InstigatorComp(InstigatorComponent), NewValue(New), OldValue(Old), AttributeTag(Tag), ChangeType(Change) {};
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UGSActionComponent* OwnerComp;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UGSActionComponent* InstigatorComp;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float NewValue;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float OldValue;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FGameplayTag AttributeTag;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	EAttributeChangeType ChangeType {EAttributeChangeType::Add};
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAttributeChanged, const FAttributeChangeDetails&, AttributeChangeDetails);
+
 USTRUCT(BlueprintType)
 struct FAttribute
 {
@@ -48,14 +90,8 @@ struct FAttribute
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	bool bClampToZero{false};
-};
 
-UENUM(BlueprintType)
-enum class EAttributeChangeType : uint8
-{
-	None,
-	Override,
-	Add
+	FAttributeChanged OnAttributeChanged;
 };
 
 /**
@@ -77,36 +113,4 @@ struct FAttributeModification
 
 	UPROPERTY(BlueprintReadWrite)
 	TWeakObjectPtr<UGSActionComponent> InstigatorComponent;
-};
-
-/**
-* Struct used to notify a change in an existing attribute
-*/
-USTRUCT(BlueprintType)
-struct FAttributeChangeDetails
-{
-	GENERATED_BODY();
-
-	FAttributeChangeDetails() = default;
-
-	FAttributeChangeDetails(UGSActionComponent* OwnerComponent, UGSActionComponent* InstigatorComponent, FAttribute New, FAttribute Old, FGameplayTag Tag, EAttributeChangeType Change) :
-		OwnerComp(OwnerComponent), InstigatorComp(InstigatorComponent), NewAttribute(New), OldAttribute(Old), AttributeTag(Tag), ChangeType(Change) {};
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	UGSActionComponent* OwnerComp;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	UGSActionComponent* InstigatorComp;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FAttribute NewAttribute;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FAttribute OldAttribute;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FGameplayTag AttributeTag;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	EAttributeChangeType ChangeType{EAttributeChangeType::Add};
 };

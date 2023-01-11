@@ -10,7 +10,7 @@ class UGSActionComponent;
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class GS_RPGGAME_API UGSAction : public UObject
 {
 	GENERATED_BODY()

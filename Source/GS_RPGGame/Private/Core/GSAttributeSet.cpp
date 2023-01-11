@@ -40,8 +40,8 @@ bool UGSAttributeSet::ApplyAttributeChange(const FAttributeModification& Attribu
 		{
 			PostAttributeChange(AttributeMod);
 
-			FAttributeChangeDetails AttributeChangeDetails(ActionComp, AttributeMod.InstigatorComponent.Get(), *Attribute, OldValue, AttributeMod.AttributeName, AttributeMod.ChangeType);
-			GetOwningComponent()->BroadCastAttributeChanged(AttributeChangeDetails);
+			FAttributeChangeDetails AttributeChangeDetails(ActionComp, AttributeMod.InstigatorComponent.Get(), (*Attribute).GetValue(), OldValue.GetValue(), AttributeMod.AttributeName, AttributeMod.ChangeType);
+			Attribute->OnAttributeChanged.Broadcast(AttributeChangeDetails);
 		}
 
 		return HasChanged;
@@ -82,7 +82,10 @@ float UGSAttributeSet::GetAttributeValue(FGameplayTag AttributeTag)
 
 void UGSAttributeSet::PostAttributeChange(const FAttributeModification& AttributeMod)
 {
+	// TODO: Find a better way to clamp it without all the if
 	static const FGameplayTag HealthTag = UGameplayTagsManager::Get().RequestGameplayTag("Attributes.Health");
+	static const FGameplayTag StaminaTag = UGameplayTagsManager::Get().RequestGameplayTag("Attributes.Stamina");
+	static const FGameplayTag ManaTag = UGameplayTagsManager::Get().RequestGameplayTag("Attributes.Mana");
 	if (AttributeMod.AttributeName == HealthTag)
 	{
 		Health.Base = FMath::Clamp(Health.Base, 0.0f, MaxHealth.GetValue());
@@ -90,6 +93,16 @@ void UGSAttributeSet::PostAttributeChange(const FAttributeModification& Attribut
 		{
 			//TODO: Dead
 		}
+	}
+	else if (AttributeMod.AttributeName == StaminaTag)
+	{
+		static const FGameplayTag MaxStaminaTag = UGameplayTagsManager::Get().RequestGameplayTag("Attributes.MaxStamina");
+		ClampAttribute(StaminaTag, MaxStaminaTag);
+	}
+	else if (AttributeMod.AttributeName == ManaTag)
+	{
+		static const FGameplayTag MaxManaTag = UGameplayTagsManager::Get().RequestGameplayTag("Attributes.MaxStamina");
+		ClampAttribute(ManaTag, MaxManaTag);
 	}
 }
 
@@ -106,6 +119,15 @@ TOptional<FName> UGSAttributeSet::GetAttributeName(FGameplayTag AttributeTag) co
 	TagName.ToString().Split(".", &AttributePrefix, &AttributeName, ESearchCase::IgnoreCase, ESearchDir::FromEnd);
 
 	return AttributeName.IsEmpty() ? TOptional<FName>() : TOptional<FName>(FName(*AttributeName));
+}
+
+void UGSAttributeSet::ClampAttribute(FGameplayTag AttributeTag, FGameplayTag MaxAttributeTag)
+{
+	FAttribute Attribute, MaxAttribute;
+	if (GetAttribute(AttributeTag, Attribute) && GetAttribute(MaxAttributeTag, MaxAttribute))
+	{
+		Attribute.Base = FMath::Clamp(Attribute.Base, 0.0f, MaxAttribute.GetValue());
+	}
 }
 
 UGSActionComponent* UGSAttributeSet::GetOwningComponent() const

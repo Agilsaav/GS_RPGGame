@@ -11,7 +11,7 @@ class UGSActionComponent;
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class GS_RPGGAME_API UGSAttributeSet : public UObject
 {
 	GENERATED_BODY()
@@ -62,6 +62,11 @@ private:
 	* Returns the attribute name if it is found , otherwise returns a non set optional object.
 	*/
 	TOptional<FName> GetAttributeName(FGameplayTag AttributeTag) const;
+
+	/**
+	* Clamps an attribute given a max attribute.
+	*/
+	void ClampAttribute(FGameplayTag AttributeTag, FGameplayTag MaxAttributeTag);
 
 	UPROPERTY()
 	UGSActionComponent* ActionComp;

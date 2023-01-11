@@ -28,33 +28,6 @@ void UGSActionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	}
 }
 
-void UGSActionComponent::AddAttributeListener(FGameplayTag AttributeTag, const FAttributeChanged& Event, bool bExecute)
-{
-	AttributeListeners.Emplace(AttributeTag, Event);
-
-	if (bExecute)
-	{
-		FAttribute Attribute;
-		if (ensure(AttributesSet))
-		{
-			AttributesSet->GetAttribute(AttributeTag, Attribute);
-		}
-		FAttributeChangeDetails AttributeChangeDetails(this, this, Attribute, Attribute, AttributeTag, EAttributeChangeType::None);
-		Event.Execute(AttributeChangeDetails);
-	}
-}
-
-void UGSActionComponent::BroadCastAttributeChanged(const FAttributeChangeDetails& AttributeChangeDetails)
-{
-	for (const auto& [Tag, AttributeChangeEvent] : AttributeListeners)
-	{
-		if (Tag.MatchesTag(AttributeChangeDetails.AttributeTag))
-		{
-			AttributeChangeEvent.Execute(AttributeChangeDetails);
-		}
-	}
-}
-
 void UGSActionComponent::AddAction(AActor* Instigator, FGameplayTag ActionTag, TSubclassOf<UGSAction> ActionClass)
 {
 	if (!ensure(ActionClass) || Actions.Contains(ActionTag))

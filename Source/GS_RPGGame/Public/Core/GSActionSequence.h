@@ -15,7 +15,7 @@ enum class EExecutionSequenceMode : uint8
 /**
  * Action which encapsulate a sequence of actions that have to be executed.
  */
-UCLASS()
+UCLASS(Blueprintable)
 class GS_RPGGAME_API UGSActionSequence : public UGSAction
 {
 	GENERATED_BODY()

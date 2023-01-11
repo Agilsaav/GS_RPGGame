@@ -7,7 +7,7 @@
 /**
  * Actions with duration fixed and/or applied with some frequency. (Ex: Buff and Debuff).
  */
-UCLASS()
+UCLASS(Blueprintable)
 class GS_RPGGAME_API UGSActionEffect : public UGSAction
 {
 	GENERATED_BODY()
