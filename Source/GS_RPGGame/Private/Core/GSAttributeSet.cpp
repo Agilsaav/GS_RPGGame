@@ -41,7 +41,8 @@ bool UGSAttributeSet::ApplyAttributeChange(const FAttributeModification& Attribu
 			PostAttributeChange(AttributeMod);
 
 			FAttributeChangeDetails AttributeChangeDetails(ActionComp, AttributeMod.InstigatorComponent.Get(), (*Attribute).GetValue(), OldValue.GetValue(), AttributeMod.AttributeName, AttributeMod.ChangeType);
-			Attribute->OnAttributeChanged.Broadcast(AttributeChangeDetails);
+			//Attribute->OnAttributeChanged.Broadcast(AttributeChangeDetails);
+			ActionComp->BroadCastAttributeChanged(AttributeChangeDetails);
 		}
 
 		return HasChanged;

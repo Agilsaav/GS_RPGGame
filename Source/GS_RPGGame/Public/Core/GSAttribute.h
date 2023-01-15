@@ -46,7 +46,14 @@ struct FAttributeChangeDetails
 	EAttributeChangeType ChangeType {EAttributeChangeType::Add};
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAttributeChanged, const FAttributeChangeDetails&, AttributeChangeDetails);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAttributeChanged, const FAttributeChangeDetails&, AttributeChangeDetails);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FAttributeChanged, const FAttributeChangeDetails&, AttributeChangeDetails);
+
+/**
+* NOTE: Delagetas in structs do not work properly and can't be called in BP.
+* If the function AddAttributeListner does not properly work, I can change FAttribute to a class deriving from UObject.
+* This will allow me to have the delegate inside the attribute.
+*/
 
 USTRUCT(BlueprintType)
 struct FAttribute
@@ -91,7 +98,8 @@ struct FAttribute
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	bool bClampToZero{false};
 
-	FAttributeChanged OnAttributeChanged;
+	//UPROPERTY(BlueprintAssignable)
+	//FAttributeChanged OnAttributeChanged;
 };
 
 /**

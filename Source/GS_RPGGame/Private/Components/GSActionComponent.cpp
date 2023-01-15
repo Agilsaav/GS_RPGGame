@@ -2,10 +2,14 @@
 #include "Core/GSAction.h"
 #include "Core/GSAttributeSet.h"
 
+void UGSActionComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+}
+
 void UGSActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
 	AttributesSet = NewObject<UGSAttributeSet>(GetOwner(), AttributesSetClass);
 	AttributesSet->Initialize(this);
 
@@ -24,6 +28,47 @@ void UGSActionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		if (Action && Action->IsActive())
 		{
 			Action->StopAction(GetOwner());
+		}
+	}
+}
+
+void UGSActionComponent::AddAttributeListener(FGameplayTag AttributeTag, const FAttributeChanged& Event, bool bExecute)
+{
+	AttributeListeners.Emplace(AttributeTag, Event);
+
+	if (bExecute)
+	{
+		FAttribute Attribute;
+		if (ensure(AttributesSet))
+		{
+			AttributesSet->GetAttribute(AttributeTag, Attribute);
+		}
+		FAttributeChangeDetails AttributeChangeDetails(this, this, Attribute.GetValue(), Attribute.GetValue(), AttributeTag, EAttributeChangeType::None);
+		Event.Execute(AttributeChangeDetails);
+	}
+}
+
+void UGSActionComponent::RemoveAttributeListener(const FAttributeChanged& Event)
+{
+	TPair<FGameplayTag, FAttributeChanged>* FoundEvent = AttributeListeners.FindByPredicate([&Event](const TPair<FGameplayTag, FAttributeChanged>& EventPair)
+	{
+		return EventPair.Value == Event;
+	});
+
+	if (FoundEvent)
+	{
+		// To gain performance try to move the value at the last before remove it
+		AttributeListeners.Remove(*FoundEvent);
+	}
+}
+
+void UGSActionComponent::BroadCastAttributeChanged(const FAttributeChangeDetails& AttributeChangeDetails)
+{
+	for (const auto& [Tag, AttributeChangeEvent] : AttributeListeners)
+	{
+		if (Tag.MatchesTag(AttributeChangeDetails.AttributeTag))
+		{
+			AttributeChangeEvent.Execute(AttributeChangeDetails);
 		}
 	}
 }

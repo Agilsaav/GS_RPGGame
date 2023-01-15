@@ -11,6 +11,8 @@ class USpringArmComponent;
 class UGSActionComponent;
 class UInputMappingContext;
 class UGSInputDataAsset;
+class UGSInteractionComponent;
+class USphereComponent;
 
 UCLASS()
 class GS_RPGGAME_API AGSCharacter : public ACharacter
@@ -25,6 +27,18 @@ public:
 	
 	// Called every frame
 	void Tick(float DeltaTime) override;
+
+	/**
+	* Returns the action component. (If it does not work remove FORCEINLINE)
+	*/
+	UFUNCTION(Category = "C++", BlueprintPure) 
+	FORCEINLINE UGSActionComponent* GetActionComponent() const { return ActionComp; }
+
+	/**
+	* Returns the interaction component. (If it does not work remove FORCEINLINE)
+	*/
+	UFUNCTION(Category = "C++", BlueprintPure)
+	FORCEINLINE UGSInteractionComponent* GetInteractionComponent() const { return InteractionComp; }
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UCameraComponent* CameraComp;
@@ -34,6 +48,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Components")
 	UGSActionComponent* ActionComp;
+
+	UPROPERTY(EditAnywhere, Category = "Components")
+	UGSInteractionComponent* InteractionComp;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input")
 	UInputMappingContext* InputMapping;
@@ -61,6 +78,16 @@ private:
 	 */
 	 void Look(const FInputActionValue& Value);
 
+	 /**
+	 * Call the action to interact
+	 */
+	 void Interact();
+
+	 /**
+	 * Function called on OnHealthChanged event.
+	 */
 	UFUNCTION()
-	void OnHealthChange(const FAttributeChangeDetails& AttributeChangeDetails);
+	void OnHealthChanged(const FAttributeChangeDetails& AttributeChangeDetails);
+
+	FAttributeChanged OnHealthChange;
 };

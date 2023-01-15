@@ -7,9 +7,6 @@
 
 class UGSAttributeSet;
 
-//TODO: Check delgate vs multicast delegate. And structure of this
-//DECLARE_DYNAMIC_DELEGATE_OneParam(FAttributeChanged, const FAttributeChangeDetails&, AttributeChangeDetails);
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActionStateChanged, UGSActionComponent*, OwningComp, UGSAction*, Action);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -18,6 +15,25 @@ class GS_RPGGAME_API UGSActionComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:	
+	void InitializeComponent() override;
+
+	/**
+	* Adds a listener to an especific attribute.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	void AddAttributeListener(FGameplayTag AttributeTag, const FAttributeChanged& Event, bool bExecute = false);
+
+	/**
+	* Adds a listener to an especific attribute.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	void RemoveAttributeListener(const FAttributeChanged& Event);
+
+	/**
+	* Broadcast an attribute change for all the listeners on the attribute changed.
+	*/
+	void BroadCastAttributeChanged(const FAttributeChangeDetails& AttributeChangeDetails);
+
 	/**
 	* Adds an action.
 	*/
@@ -123,5 +139,6 @@ private:
 	 */
 	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+	TArray<TPair<FGameplayTag, FAttributeChanged>> AttributeListeners;
 	TMap<FGameplayTag, uint8> StoppedActions;
 };

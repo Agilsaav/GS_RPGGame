@@ -6,6 +6,8 @@
 #include "GameplayTagsManager.h"
 #include "Core/GSAttributeSet.h"
 #include "DataAssets/GSInputDataAsset.h"
+#include "Components/GSInteractionComponent.h"
+#include "Components/SphereComponent.h"
 
 #include "EnhancedInput/Public/EnhancedInputSubsystems.h"
 #include "EnhancedInput/Public/InputMappingContext.h"
@@ -18,17 +20,16 @@ AGSCharacter::AGSCharacter()
 
 	SpringArmComp = CreateAbstractDefaultSubobject<USpringArmComponent>("SpringArmComponent");
 	SpringArmComp->SetupAttachment(RootComponent);
-	SpringArmComp->TargetArmLength = 100.0f;
+	SpringArmComp->TargetArmLength = 300.0f;
 
 	CameraComp = CreateAbstractDefaultSubobject<UCameraComponent>("CameraComponent");
 	CameraComp->SetupAttachment(SpringArmComp);
 
 	ActionComp = CreateAbstractDefaultSubobject<UGSActionComponent>("ActionComponent");
+	InteractionComp = CreateAbstractDefaultSubobject<UGSInteractionComponent>("InteractionComponent");
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
-	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
-	bUseControllerRotationRoll = false;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Rotate the arm based on the controller
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
@@ -47,9 +48,10 @@ void AGSCharacter::PostInitializeComponents()
 
 	if (ActionComp->AttributesSet)
 	{
-		// TODO: ActionComp->AddAttributeListener(HealthTag, this,  &AGSCharacter::OnHealthChange)
+		// TODO: I do not like to bind and add to attribute listener, maybe change in the future
 		static const FGameplayTag HealthTag = UGameplayTagsManager::Get().RequestGameplayTag("Attributes.Health");
-		ActionComp->AttributesSet->Health.OnAttributeChanged.AddDynamic(this, &AGSCharacter::OnHealthChange);
+		OnHealthChange.BindDynamic(this, &AGSCharacter::OnHealthChanged);
+		ActionComp->AddAttributeListener(HealthTag, OnHealthChange);
 	}
 }
 
@@ -63,7 +65,7 @@ FVector AGSCharacter::GetPawnViewLocation() const
 	return CameraComp->GetComponentLocation();
 }
 
-void AGSCharacter::OnHealthChange(const FAttributeChangeDetails& AttributeChangeDetails)
+void AGSCharacter::OnHealthChanged(const FAttributeChangeDetails& AttributeChangeDetails)
 {
 
 }
@@ -99,6 +101,11 @@ void AGSCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+void AGSCharacter::Interact()
+{
+	InteractionComp->Interact();
+}
+
 void AGSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -114,7 +121,7 @@ void AGSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		EnhancedInputComp->BindAction(InputActions->InputMove, ETriggerEvent::Triggered, this, &AGSCharacter::Move);
 		EnhancedInputComp->BindAction(InputActions->InputLook, ETriggerEvent::Triggered, this, &AGSCharacter::Look);
 		EnhancedInputComp->BindAction(InputActions->InputSpace, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-		//EnhancedInputComp->BindAction(InputActions->InputInteraction, ETriggerEvent::Triggered, this, &AGSCharacter::Look);
+		EnhancedInputComp->BindAction(InputActions->InputInteraction, ETriggerEvent::Triggered, this, &AGSCharacter::Interact);
 	}
 }
 
