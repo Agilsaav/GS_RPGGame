@@ -4,6 +4,7 @@
 #include "Components/ActorComponent.h"
 #include "GSInteractionComponent.generated.h"
 
+class UGSWorldWidgetWidget;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class GS_RPGGAME_API UGSInteractionComponent : public UActorComponent
@@ -81,6 +82,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Trace")
 	float InteractFrequency{0.1f};
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UGSWorldWidgetWidget> DefaultWidgetClass;
+
 private:
 	/**
 	* Finds the object to interact with
@@ -97,8 +101,16 @@ private:
 	*/
 	void RemoveInteractionWidget();
 
+	/**
+	* Check if the player can interact using distance and forward direction. The player near the object and looking at it.
+	*/
+	[[nodiscard]] bool CanPlayerInteract(AActor* OtherActor, const FVector& OwnerLocation, const FVector& OwnerForwardDirection) const;
+
 	UPROPERTY()
 	AActor* FocusedActor{nullptr};
+
+	UPROPERTY()
+	UGSWorldWidgetWidget* DefaultWidgetInstance;
 
 	FTimerHandle TimerHandle_Interact;
 	uint32 CurrentNumberOfInteractables{0};

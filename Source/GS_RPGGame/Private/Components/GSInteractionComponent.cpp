@@ -1,5 +1,7 @@
 #include "Components/GSInteractionComponent.h"
 #include "Gameplay/GSInteractable.h"
+#include "UI/GSWorldWidgetWidget.h"
+#include "Components/SphereComponent.h"
 
 void UGSInteractionComponent::StartLookingForInteractables()
 {
@@ -77,12 +79,16 @@ void UGSInteractionComponent::FindBestInteractable()
 	TArray<FHitResult> Hits;
 	GetWorld()->SweepMultiByObjectType(Hits, EyeLocation, EndLocation, FQuat::Identity, ObjectQueryParams, Shape);
 
+	const FVector OwnerLocation = GetOwner()->GetActorLocation();
+	const FVector OwnerForwardDir = GetOwner()->GetActorForwardVector();
 	FocusedActor = nullptr;
 	for (const auto& Hit : Hits)
 	{
-		if (AActor* HitActor = Hit.GetActor())
+		AActor* HitActor = Hit.GetActor();
+		const bool IsSphereComponent = Cast<USphereComponent>(Hit.Component) != nullptr;
+		if (HitActor && !IsSphereComponent)
 		{
-			if (HitActor->Implements<UGSInteractable>() && Hit.Distance <= IGSInteractable::Execute_GetInteractDistance(HitActor))
+			if (HitActor->Implements<UGSInteractable>() && CanPlayerInteract(HitActor, OwnerLocation, OwnerForwardDir))
 			{
 				FocusedActor = HitActor;
 				break;
@@ -95,26 +101,33 @@ void UGSInteractionComponent::FindBestInteractable()
 
 void UGSInteractionComponent::SpawnInteractionWidget()
 {
-	//if (!DefaultWidgetInstance && ensure(DefaultWidgetClass))
-	//{
-	//	DefaultWidgetInstance = CreateWidget<USWorldUserWidget>(GetWorld(), DefaultWidgetClass);
-	//}
+	if (!DefaultWidgetInstance && ensure(DefaultWidgetClass))
+	{
+		DefaultWidgetInstance = CreateWidget<UGSWorldWidgetWidget>(GetWorld(), DefaultWidgetClass);
+	}
 
-	//if (DefaultWidgetInstance)
-	//{
-	//	DefaultWidgetInstance->AttachedActor = FocusedActor;
-	//	if (!DefaultWidgetInstance->IsInViewport())
-	//	{
-	//		DefaultWidgetInstance->AddToViewport();
-	//	}
-	//}
+	if (DefaultWidgetInstance)
+	{
+		DefaultWidgetInstance->AttachedActor = FocusedActor;
+		if (!DefaultWidgetInstance->IsInViewport())
+		{
+			DefaultWidgetInstance->AddToViewport();
+		}
+	}
 }
 
 void UGSInteractionComponent::RemoveInteractionWidget()
 {
-	//if (DefaultWidgetInstance)
-	//{
-	//	DefaultWidgetInstance->RemoveFromParent();
-	//}
+	if (DefaultWidgetInstance)
+	{
+		DefaultWidgetInstance->RemoveFromParent();
+	}
+}
+
+bool UGSInteractionComponent::CanPlayerInteract(AActor* OtherActor, const FVector& OwnerLocation, const FVector& OwnerForwardDirection) const
+{
+	const FVector Direction = OtherActor->GetActorLocation() - OwnerLocation;
+	return FVector::Distance(OtherActor->GetActorLocation(), OwnerLocation) <= IGSInteractable::Execute_GetInteractDistance(OtherActor)
+		&& FVector::DotProduct(Direction, OwnerForwardDirection) > 0.f;
 }
 
