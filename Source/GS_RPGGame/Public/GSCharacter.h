@@ -13,6 +13,7 @@ class UInputMappingContext;
 class UGSInputDataAsset;
 class UGSInteractionComponent;
 class USphereComponent;
+class UGSLevelComponent;
 
 UCLASS()
 class GS_RPGGAME_API AGSCharacter : public ACharacter
@@ -51,6 +52,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Components")
 	UGSInteractionComponent* InteractionComp;
+
+	UPROPERTY(EditAnywhere, Category = "Components")
+	UGSLevelComponent* LevelComp;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input")
 	UInputMappingContext* InputMapping;

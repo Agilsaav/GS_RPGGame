@@ -7,7 +7,7 @@
 #include "Core/GSAttributeSet.h"
 #include "DataAssets/GSInputDataAsset.h"
 #include "Components/GSInteractionComponent.h"
-#include "Components/SphereComponent.h"
+#include "Components/GSLevelComponent.h"
 
 #include "EnhancedInput/Public/EnhancedInputSubsystems.h"
 #include "EnhancedInput/Public/InputMappingContext.h"
@@ -27,6 +27,7 @@ AGSCharacter::AGSCharacter()
 
 	ActionComp = CreateAbstractDefaultSubobject<UGSActionComponent>("ActionComponent");
 	InteractionComp = CreateAbstractDefaultSubobject<UGSInteractionComponent>("InteractionComponent");
+	LevelComp = CreateAbstractDefaultSubobject<UGSLevelComponent>("LevelComponent");
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationYaw = false;
