@@ -81,6 +81,47 @@ float UGSAttributeSet::GetAttributeValue(FGameplayTag AttributeTag)
 	return 0.0f;
 }
 
+void UGSAttributeSet::ResetAttributeValueByName(float NewValue, FName AttributeName)
+{
+	if (AttributeName.IsNone())
+	{
+		return;
+	}
+
+	const FGameplayTag AttributeTag = UGameplayTagsManager::Get().RequestGameplayTag(FName("Attributes." + AttributeName.ToString()));
+	ResetAttributeValue(NewValue, AttributeTag);
+}
+
+void UGSAttributeSet::ResetAttributeValue(float NewValue, FGameplayTag AttributeTag)
+{
+	if (!AttributeTag.IsValid())
+	{
+		return;
+	}
+
+	TOptional<FName> AttributeName = GetAttributeName(AttributeTag);
+	if (!AttributeName.IsSet())
+	{
+		return;
+	}
+
+	FStructProperty* Property = CastField<FStructProperty>(GetClass()->FindPropertyByName(AttributeName.GetValue()));
+	if (!Property)
+	{
+		return;
+	}
+
+	FAttribute* Attribute = Property->ContainerPtrToValuePtr<FAttribute>(this);
+	if (Attribute)
+	{
+		Attribute->Base = NewValue;
+		Attribute->Delta = 0.0f;
+		Attribute->Multiplier = 1.0f;
+
+		//TODO: For now this is only done in the creation of character. If it is necesary on other place I should add a broadcast of the event and PostAttributeChange.
+	}
+}
+
 void UGSAttributeSet::PostAttributeChange(const FAttributeModification& AttributeMod)
 {
 	// TODO: Find a better way to clamp it without all the if

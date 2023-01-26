@@ -1,0 +1,2 @@
+#include "DataAssets/GSInitialCharacterDataAsset.h"
+

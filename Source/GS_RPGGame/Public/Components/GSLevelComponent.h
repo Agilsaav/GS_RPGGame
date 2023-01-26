@@ -37,7 +37,7 @@ public:
 	* Adds levels
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Level")
-	void AddLevels(float Levels);
+	void AddLevels(int Levels);
 
 	/**
 	* Returns wether the current level is the max

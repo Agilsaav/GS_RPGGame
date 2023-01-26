@@ -2,15 +2,27 @@
 #include "Core/GSAction.h"
 #include "Core/GSAttributeSet.h"
 
+UGSActionComponent::UGSActionComponent()
+{
+	// TODO: Erase this and InitializeComponent. For the moment I will leave it here to remember that I need to set bWantsInitializeComponent to true to call InitializeComponent.
+	//bWantsInitializeComponent = true;
+}
+
+void UGSActionComponent::PostLoad()
+{
+	Super::PostLoad();
+	AttributesSet = NewObject<UGSAttributeSet>(GetOwner(), AttributesSetClass);
+}
+
 void UGSActionComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
+	//AttributesSet = NewObject<UGSAttributeSet>(GetOwner(), AttributesSetClass);
 }
 
 void UGSActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	AttributesSet = NewObject<UGSAttributeSet>(GetOwner(), AttributesSetClass);
 	AttributesSet->Initialize(this);
 
 	for (const auto& [ActionTag, Action] : DefaultActions)

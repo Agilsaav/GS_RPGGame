@@ -15,7 +15,11 @@ class GS_RPGGAME_API UGSActionComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:	
+	UGSActionComponent();
+
 	void InitializeComponent() override;
+
+	void PostLoad() override;
 
 	/**
 	* Adds a listener to an especific attribute.

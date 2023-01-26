@@ -29,6 +29,7 @@ public:
 
 	/**
 	* Returns true if the attribute is found, and the parameter OutAttribute is the desired attribute.
+	* DO NOT USE TO CHANGE THE ATTRIBUTE.
 	*/
 	UFUNCTION(BlueprintCallable)
 	bool GetAttribute(FGameplayTag AttributeTag, FAttribute& OutAttribute);
@@ -40,15 +41,27 @@ public:
 	float GetAttributeValue(FGameplayTag AttributeTag);
 
 	/**
+	* Resets the Attribute to defaults setting with a new Base value.
+	*/
+	UFUNCTION(BlueprintCallable)
+	void ResetAttributeValueByName(float NewValue, FName AttributeName);
+
+	/**
+	* Resets the Attribute to defaults setting with a new Base value.
+	*/
+	UFUNCTION(BlueprintCallable)
+	void ResetAttributeValue(float NewValue, FGameplayTag AttributeTag);
+
+	/**
 	* Returns the owning component.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	UGSActionComponent* GetOwningComponent() const;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Attributes")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
 	FAttribute Health;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Attributes")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
 	FAttribute MaxHealth {100.0f};
 
 private:

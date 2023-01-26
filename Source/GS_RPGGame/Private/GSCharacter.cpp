@@ -8,6 +8,8 @@
 #include "DataAssets/GSInputDataAsset.h"
 #include "Components/GSInteractionComponent.h"
 #include "Components/GSLevelComponent.h"
+#include "Blueprint/UserWidget.h"
+#include "Core/GSAttributeSet.h"
 
 #include "EnhancedInput/Public/EnhancedInputSubsystems.h"
 #include "EnhancedInput/Public/InputMappingContext.h"
@@ -61,6 +63,21 @@ void AGSCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+FName AGSCharacter::GetClassName() const
+{
+	if (!Class.IsValid())
+	{
+		return FName();
+	}
+
+	// Class tag should be: Class.ClassName (Ex: Class.Mage)
+	const FName TagName = Class.GetTagName();
+	FString ClassPrefix, ClassName;
+	TagName.ToString().Split(".", &ClassPrefix, &ClassName, ESearchCase::IgnoreCase, ESearchDir::FromEnd);
+
+	return FName(*ClassName);
+}
+
 FVector AGSCharacter::GetPawnViewLocation() const
 {
 	return CameraComp->GetComponentLocation();
@@ -107,6 +124,25 @@ void AGSCharacter::Interact()
 	InteractionComp->Interact();
 }
 
+void AGSCharacter::OnCharacterHUDPressed()
+{
+	if (!CharacterWidgetInstance && ensure(CharacterWidgetClass))
+	{
+		CharacterWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), CharacterWidgetClass);
+		CharacterWidgetInstance->SetOwningPlayer(Cast<APlayerController>(GetController()));
+	}
+
+	if (!CharacterWidgetInstance->IsInViewport())
+	{
+		CharacterWidgetInstance->AddToViewport();
+
+	}
+	else
+	{
+		CharacterWidgetInstance->RemoveFromParent();
+	}
+}
+
 void AGSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -123,6 +159,7 @@ void AGSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		EnhancedInputComp->BindAction(InputActions->InputLook, ETriggerEvent::Triggered, this, &AGSCharacter::Look);
 		EnhancedInputComp->BindAction(InputActions->InputSpace, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		EnhancedInputComp->BindAction(InputActions->InputInteraction, ETriggerEvent::Triggered, this, &AGSCharacter::Interact);
+		EnhancedInputComp->BindAction(InputActions->InputCharacterButton, ETriggerEvent::Triggered, this, &AGSCharacter::OnCharacterHUDPressed);
 	}
 }
 

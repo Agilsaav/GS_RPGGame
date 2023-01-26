@@ -37,9 +37,14 @@ void UGSLevelComponent::AddExperience(float ExpAmount)
 	TotalExp += ExpAmount;
 }
 
-void UGSLevelComponent::AddLevels(float Levels)
+void UGSLevelComponent::AddLevels(int Levels)
 {
-	for (uint32 Level = 0; Level < Levels; ++Level)
+	if (Levels <= 0)
+	{
+		return;
+	}
+
+	for (int Level = 0; Level < Levels; ++Level)
 	{
 		if (!IsMaxLevel())
 		{

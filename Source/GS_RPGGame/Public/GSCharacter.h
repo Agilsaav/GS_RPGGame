@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "Core/GSAttribute.h"
 #include "EnhancedInput/Public/InputActionValue.h"
+#include "GameplayTagContainer.h"
 #include "GSCharacter.generated.h"
 
 class UCameraComponent;
@@ -14,6 +15,7 @@ class UGSInputDataAsset;
 class UGSInteractionComponent;
 class USphereComponent;
 class UGSLevelComponent;
+class UUserWidget;
 
 UCLASS()
 class GS_RPGGAME_API AGSCharacter : public ACharacter
@@ -30,16 +32,34 @@ public:
 	void Tick(float DeltaTime) override;
 
 	/**
-	* Returns the action component. (If it does not work remove FORCEINLINE)
+	* Returns the action component.
 	*/
 	UFUNCTION(Category = "C++", BlueprintPure) 
 	FORCEINLINE UGSActionComponent* GetActionComponent() const { return ActionComp; }
 
 	/**
-	* Returns the interaction component. (If it does not work remove FORCEINLINE)
+	* Returns the interaction component.
 	*/
 	UFUNCTION(Category = "C++", BlueprintPure)
 	FORCEINLINE UGSInteractionComponent* GetInteractionComponent() const { return InteractionComp; }
+
+	/**
+	* Returns the level component.
+	*/
+	UFUNCTION(Category = "C++", BlueprintPure)
+	FORCEINLINE UGSLevelComponent* GetLevelComponent() const { return LevelComp; }
+
+	/**
+	* Returns the class name.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Class")
+	FName GetClassName() const;
+
+	/**
+	* Sets the class of the character.
+	*/
+	void SetClass(FGameplayTag ClassTag);
+
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UCameraComponent* CameraComp;
@@ -62,6 +82,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input")
 	UGSInputDataAsset* InputActions;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Class")
+	FGameplayTag Class;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> CharacterWidgetClass;
 private:
 	// Allow actors to initialize themselves after all of their components have been initialized
 	void PostInitializeComponents() override;
@@ -88,10 +113,18 @@ private:
 	 void Interact();
 
 	 /**
+	 * 
+	 */
+	 void OnCharacterHUDPressed();
+
+	 /**
 	 * Function called on OnHealthChanged event.
 	 */
 	UFUNCTION()
 	void OnHealthChanged(const FAttributeChangeDetails& AttributeChangeDetails);
+
+	UPROPERTY()
+	UUserWidget* CharacterWidgetInstance;
 
 	FAttributeChanged OnHealthChange;
 };
