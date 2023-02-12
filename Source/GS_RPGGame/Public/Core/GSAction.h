@@ -65,7 +65,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
 	TSoftObjectPtr<UTexture2D> ActionIcon;
 protected:
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	UGSActionComponent* ActionComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Tags")

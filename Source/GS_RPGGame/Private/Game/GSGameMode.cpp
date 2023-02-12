@@ -5,6 +5,8 @@
 #include "Engine/AssetManager.h"
 #include "Components/GSActionComponent.h"
 #include "Components/GSLevelComponent.h"
+#include "Components/GSInventoryComponent.h"
+#include "Components/GSEquipmentComponent.h"
 #include "Core/GSAttributeSet.h"
 #include "GameplayTagsManager.h"
 
@@ -80,5 +82,22 @@ void AGSGameMode::OnCharacterDataLoaded(FPrimaryAssetId LoadedId, AGSCharacter* 
 		{
 			ActionComp->AddAction(Character, ActionTag, Action);
 		}
+	}
+
+	UGSInventoryComponent* InventoryComp = Character->GetInevntoryComponent();
+	for (const auto& [Name, ItemType] : CharacterData->Items)
+	{
+		InventoryComp->AddItem(Name, ItemType);
+	}
+
+	UGSEquipmentComponent* EquipmentComp = Character->GetEquipmentComponent();
+	for (const auto& [Name, EquipmentType] : CharacterData->Equipment)
+	{
+		InventoryComp->AddItem(Name, EGSItemType::Armor);
+	}
+
+	for (const auto& [Name, EquipmentType] : CharacterData->Weapons)
+	{
+		InventoryComp->AddItem(Name, EGSItemType::Weapon);
 	}
 }

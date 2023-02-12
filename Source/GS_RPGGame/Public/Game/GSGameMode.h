@@ -26,6 +26,7 @@ public:
 
 	/** Tries to spawn the player's pawn, at the location returned by FindPlayerStart */
 	void RestartPlayer(AController* NewPlayer) override;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Character")
 	UDataTable* CharacterClassesTable;

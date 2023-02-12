@@ -10,6 +10,8 @@
 #include "Components/GSLevelComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "Core/GSAttributeSet.h"
+#include "Components/GSInventoryComponent.h"
+#include "Components/GSEquipmentComponent.h"
 
 #include "EnhancedInput/Public/EnhancedInputSubsystems.h"
 #include "EnhancedInput/Public/InputMappingContext.h"
@@ -30,6 +32,8 @@ AGSCharacter::AGSCharacter()
 	ActionComp = CreateAbstractDefaultSubobject<UGSActionComponent>("ActionComponent");
 	InteractionComp = CreateAbstractDefaultSubobject<UGSInteractionComponent>("InteractionComponent");
 	LevelComp = CreateAbstractDefaultSubobject<UGSLevelComponent>("LevelComponent");
+	InventoryComp = CreateAbstractDefaultSubobject<UGSInventoryComponent>("InventoryComponent");
+	EquipmentComp = CreateAbstractDefaultSubobject<UGSEquipmentComponent>("EquipmentComponent");
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationYaw = false;

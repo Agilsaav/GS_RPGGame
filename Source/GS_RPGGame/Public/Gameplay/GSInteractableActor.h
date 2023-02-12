@@ -8,6 +8,10 @@
 class USphereComponent;
 class UGSInteractionComponent;
 
+
+/**
+ * Base class for an interactable object. The main function of this is to be spawned in the world to be interacted with.
+ */
 UCLASS()
 class GS_RPGGAME_API AGSInteractableActor : public AActor, public IGSInteractable
 {

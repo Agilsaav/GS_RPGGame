@@ -39,10 +39,15 @@ public:
 	void BroadCastAttributeChanged(const FAttributeChangeDetails& AttributeChangeDetails);
 
 	/**
-	* Adds an action.
+	* Adds an action.Using a subclass of the action
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	void AddAction(AActor* Instigator, FGameplayTag ActionTag, TSubclassOf<UGSAction> ActionClass);
+
+	/**
+	* Adds an action. Using a pointer object to the action
+	*/
+	void AddAction(AActor* Instigator, FGameplayTag ActionTag, UGSAction* ActionToAdd);
 
 	/**
 	* Removes an action given its pointer.

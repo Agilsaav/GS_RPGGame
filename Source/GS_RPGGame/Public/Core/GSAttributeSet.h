@@ -29,7 +29,7 @@ public:
 
 	/**
 	* Returns true if the attribute is found, and the parameter OutAttribute is the desired attribute.
-	* DO NOT USE TO CHANGE THE ATTRIBUTE.
+	* Do not use to change the attribute.
 	*/
 	UFUNCTION(BlueprintCallable)
 	bool GetAttribute(FGameplayTag AttributeTag, FAttribute& OutAttribute);

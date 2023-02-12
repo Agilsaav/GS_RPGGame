@@ -4,6 +4,7 @@
 #include "Engine/DataAsset.h"
 #include "Engine/DataTable.h"
 #include "GameplayTagContainer.h"
+#include "Gameplay/GameplayTypes.h"
 #include "GSInitialCharacterDataAsset.generated.h"
 
 class UGSAction;
@@ -19,7 +20,14 @@ class GS_RPGGAME_API UGSInitialCharacterDataAsset : public UPrimaryDataAsset
 public:
 	FPrimaryAssetId GetPrimaryAssetId() const override { return FPrimaryAssetId("CharacterClass", GetFName()); };
 	
-	// TODO: Equipment and weapons
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Equipment")
+	TMap<FName, EGSEquipableType> Equipment;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Equipment")
+	TMap<FName, EGSEquipableType> Weapons;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Items")
+	TMap<FName, EGSItemType> Items;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
 	TMap<FGameplayTag, TSubclassOf<UGSAction>> Actions;

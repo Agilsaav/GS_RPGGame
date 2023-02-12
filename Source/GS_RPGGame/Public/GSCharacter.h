@@ -16,6 +16,8 @@ class UGSInteractionComponent;
 class USphereComponent;
 class UGSLevelComponent;
 class UUserWidget;
+class UGSEquipmentComponent;
+class UGSInventoryComponent;
 
 UCLASS()
 class GS_RPGGAME_API AGSCharacter : public ACharacter
@@ -35,19 +37,31 @@ public:
 	* Returns the action component.
 	*/
 	UFUNCTION(Category = "C++", BlueprintPure) 
-	FORCEINLINE UGSActionComponent* GetActionComponent() const { return ActionComp; }
+	FORCEINLINE UGSActionComponent* GetActionComponent() const noexcept { return ActionComp; }
 
 	/**
 	* Returns the interaction component.
 	*/
 	UFUNCTION(Category = "C++", BlueprintPure)
-	FORCEINLINE UGSInteractionComponent* GetInteractionComponent() const { return InteractionComp; }
+	FORCEINLINE UGSInteractionComponent* GetInteractionComponent() const noexcept { return InteractionComp; }
 
 	/**
 	* Returns the level component.
 	*/
 	UFUNCTION(Category = "C++", BlueprintPure)
-	FORCEINLINE UGSLevelComponent* GetLevelComponent() const { return LevelComp; }
+	FORCEINLINE UGSLevelComponent* GetLevelComponent() const noexcept { return LevelComp; }
+
+	/**
+	* Returns the level component.
+	*/
+	UFUNCTION(Category = "C++", BlueprintPure)
+	FORCEINLINE UGSEquipmentComponent* GetEquipmentComponent() const noexcept { return EquipmentComp; }
+
+	/**
+	* Returns the level component.
+	*/
+	UFUNCTION(Category = "C++", BlueprintPure)
+	FORCEINLINE UGSInventoryComponent* GetInevntoryComponent() const noexcept { return InventoryComp; }
 
 	/**
 	* Returns the class name.
@@ -75,6 +89,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Components")
 	UGSLevelComponent* LevelComp;
+
+	UPROPERTY(EditAnywhere, Category = "Components")
+	UGSEquipmentComponent* EquipmentComp;
+
+	UPROPERTY(EditAnywhere, Category = "Components")
+	UGSInventoryComponent* InventoryComp;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input")
 	UInputMappingContext* InputMapping;

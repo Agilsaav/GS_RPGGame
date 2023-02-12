@@ -87,12 +87,21 @@ void UGSActionComponent::BroadCastAttributeChanged(const FAttributeChangeDetails
 
 void UGSActionComponent::AddAction(AActor* Instigator, FGameplayTag ActionTag, TSubclassOf<UGSAction> ActionClass)
 {
-	if (!ensure(ActionClass) || Actions.Contains(ActionTag))
+	if (!ensure(ActionClass))
 	{
 		return;
 	}
 
-	UGSAction* ActionToAdd = NewObject<UGSAction>(GetOwner(), ActionClass);
+	AddAction(Instigator, ActionTag, NewObject<UGSAction>(GetOwner(), ActionClass));
+}
+
+void UGSActionComponent::AddAction(AActor* Instigator, FGameplayTag ActionTag, UGSAction* ActionToAdd)
+{
+	if (Actions.Contains(ActionTag))
+	{
+		return;
+	}
+
 	ActionToAdd->Initialize(this);
 	Actions.Add(ActionTag, ActionToAdd);
 

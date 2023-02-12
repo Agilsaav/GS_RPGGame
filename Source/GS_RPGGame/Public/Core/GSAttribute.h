@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "Core/GSAttribute.h"
 #include "GSAttribute.generated.h"
 
 class UGSActionComponent;
@@ -65,20 +66,27 @@ struct FAttribute
 
 	float GetValue() const noexcept { return (Base + Delta) * Multiplier; }
 
-	FAttribute operator+(const FAttribute& Other)
+	FAttribute& operator+(const FAttribute& Other)
 	{
-		FAttribute NewAttribute;
-		NewAttribute.Base = Base + Other.Base;
-		NewAttribute.Delta = Delta + Other.Delta;
-		NewAttribute.Multiplier = Multiplier + Other.Multiplier;
+		Base +=  Other.Base;
+		Delta += Other.Delta;
+		Multiplier += Other.Multiplier;
 
 		if (bClampToZero)
 		{
-			NewAttribute.Base = FMath::Max(NewAttribute.Base, 0.0f);
-			NewAttribute.Delta = FMath::Max(NewAttribute.Delta, 0.0f);
+			Base = FMath::Max(Base, 0.0f);
+			Delta = FMath::Max(Delta, 0.0f);
 		}
 
-		return NewAttribute;
+		return *this;
+	}
+
+	FAttribute& operator*=(float Scalar)
+	{
+		Base *= Scalar;
+		Delta *= Scalar;
+		Multiplier *= Scalar;
+		return *this;
 	}
 
 	bool operator!=(const FAttribute& Other)
