@@ -18,6 +18,9 @@ public:
 
 	void PostLoad() override;
 
+	/**
+	* Creates the inventories for the different types of objects
+	*/
 	void CreateInventories();
 
 	/**
@@ -49,6 +52,30 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	bool Contains(FName Id, EGSItemType ItemType) const;
+
+	/**
+	* Returns the item data given an Id
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	FGSItemData GetItemData(FName Id, EGSItemType ItemType) const;
+
+	/**
+	* Returns the item data given an index
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	FGSItemData GetItemDataByIndex(int Index, EGSItemType ItemType) const;
+
+	/**
+	* Returns the item stacks given an Id
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	int GetStacks(FName Id, EGSItemType ItemType) const;
+
+	/**
+	* Returns the item stacks given an index
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	int GetStacksByIndex(int Index, EGSItemType ItemType) const;
 
 private:
 	UPROPERTY()

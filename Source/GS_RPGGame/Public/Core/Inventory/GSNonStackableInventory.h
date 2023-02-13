@@ -5,6 +5,8 @@
 #include "GSInventory.h"
 #include "GSNonStackableInventory.generated.h"
 
+static constexpr unsigned int ONE_STACK = 1;
+
 /**
  * 
  */
@@ -37,7 +39,27 @@ public:
 	/**
 	* Returns wheter the inventory contaisn the object by id.
 	*/
-	bool Contains(FName Id) const override;
+	[[nodiscard]] bool Contains(FName Id) const override;
+
+	/**
+	* Returns the item data given an Id
+	*/
+	FGSItemData GetItemData(FName Id) const override;
+
+	/**
+	* Returns the item data given an index
+	*/
+	FGSItemData GetItemData(int Index) const override;
+
+	/**
+	* Returns the item stacks given an Id
+	*/
+	unsigned int GetStacks(FName Id) const override { return ONE_STACK; };
+
+	/**
+	* Returns the item stacks given an index
+	*/
+	unsigned int GetStacks(int Index) const override { return ONE_STACK; };
 
 	UWorld* GetWorld() const override;
 

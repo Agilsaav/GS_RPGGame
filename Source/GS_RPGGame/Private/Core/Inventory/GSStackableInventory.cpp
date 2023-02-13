@@ -58,3 +58,47 @@ UWorld* UGSStackableInventory::GetWorld() const
 
 	return nullptr;
 }
+
+FGSItemData UGSStackableInventory::GetItemData(FName Id) const
+{
+	const FGSStackableItemData* ItemFound = Items.FindByPredicate([&Id](const FGSStackableItemData& Item) {return Item.ItemData.Id == Id; });
+
+	if (ItemFound)
+	{
+		return (*ItemFound).ItemData;
+	}
+
+	return FGSItemData{};
+}
+
+FGSItemData UGSStackableInventory::GetItemData(int Index) const
+{
+	if (Index < Items.Num())
+	{
+		return Items[Index].ItemData;
+	}
+
+	return FGSItemData{};
+}
+
+unsigned int UGSStackableInventory::GetStacks(FName Id) const
+{
+	const FGSStackableItemData* ItemFound = Items.FindByPredicate([&Id](const FGSStackableItemData& Item) {return Item.ItemData.Id == Id; });
+
+	if (ItemFound)
+	{
+		return (*ItemFound).Stacks;
+	}
+
+	return 0;
+}
+
+unsigned int UGSStackableInventory::GetStacks(int Index) const
+{
+	if (Index < Items.Num())
+	{
+		return Items[Index].Stacks;
+	}
+
+	return 0;
+}

@@ -9,6 +9,10 @@
 #include "Components/GSEquipmentComponent.h"
 #include "Core/GSAttributeSet.h"
 #include "GameplayTagsManager.h"
+#include "Engine/GameInstance.h"
+#include "Kismet/GameplayStatics.h"
+#include "Subsystems/GSItemDataLoader.h"
+#include "Gameplay/GameplayTypes.h"
 
 static constexpr int MINIMUM_LEVEL{1};
 
@@ -94,6 +98,11 @@ void AGSGameMode::OnCharacterDataLoaded(FPrimaryAssetId LoadedId, AGSCharacter* 
 	for (const auto& [Name, EquipmentType] : CharacterData->Equipment)
 	{
 		InventoryComp->AddItem(Name, EGSItemType::Armor);
+
+		UGameInstance* GameInstance = Cast<UGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+		UGSItemDataLoader* DataLoader = GameInstance->GetSubsystem<UGSItemDataLoader>();
+		FGSItemData EquipmentToLoad = InventoryComp->GetItemData(Name, EGSItemType::Armor);
+		DataLoader->LoadEquipment(EquipmentToLoad.ItemClassData, Character, EquipmentType);
 	}
 
 	for (const auto& [Name, EquipmentType] : CharacterData->Weapons)

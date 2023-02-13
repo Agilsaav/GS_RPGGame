@@ -55,6 +55,8 @@ void UGSItemDataLoader::OnEquipmentDataLoaded(FPrimaryAssetId LoadedId, AActor* 
 	
 	AGSEquipableObject* Equipment = GetWorld()->SpawnActor<AGSEquipableObject>(EquipmentData->Item, SocketTransform, SpawnParams);
 	Equipment->SetOwner(EquipmentOwner);
+	Equipment->AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, EquipmentData->SocketName);
+	//Equipment->SetActorRotation(Character->GetActorRotation());
 
 	UGSAttributesChangeAction* AttributesChangeAction = NewObject<UGSAttributesChangeAction>(EquipmentOwner, UGSAttributesChangeAction::StaticClass());
 	AttributesChangeAction->CreateAttributesModifications(EquipmentData->AttributesMods);

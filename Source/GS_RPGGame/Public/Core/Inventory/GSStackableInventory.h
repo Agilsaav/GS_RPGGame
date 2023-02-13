@@ -38,7 +38,27 @@ public:
 	/**
 	* Returns wheter the inventory contaisn the object by id.
 	*/
-	bool Contains(FName Id) const override;
+	[[nodiscard]] bool Contains(FName Id) const override;
+
+	/**
+	* Returns the item data given an Id
+	*/
+	FGSItemData GetItemData(FName Id) const override;
+
+	/**
+	* Returns the item data given an index
+	*/
+	FGSItemData GetItemData(int Index) const override;
+
+	/**
+	* Returns the item stacks given an Id
+	*/
+	unsigned int GetStacks(FName Id) const override;
+
+	/**
+	* Returns the item stacks given an index
+	*/
+	unsigned int GetStacks(int Index) const override;
 
 	UWorld* GetWorld() const override;
 

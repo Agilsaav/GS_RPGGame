@@ -39,8 +39,8 @@ void UGSInventoryComponent::CreateInventories()
 
 void UGSInventoryComponent::AddItem(FName Id, EGSItemType ItemType)
 {
-
 	// I do not like this lazy initialization but it works, with the GetWorld problem, I would leave it right now
+	// TODO: Find another way and remove the checks on the functions
 	if (!bInventoriesInitialized)
 	{
 		CreateInventories();
@@ -87,4 +87,44 @@ bool UGSInventoryComponent::Contains(FName Id, EGSItemType ItemType) const
 	}
 
 	return Cast<IGSInventory>(Inventories[ItemType])->Contains(Id);
+}
+
+FGSItemData UGSInventoryComponent::GetItemData(FName Id, EGSItemType ItemType) const
+{
+	if (!bInventoriesInitialized)
+	{
+		return FGSItemData{};
+	}
+
+	return Cast<IGSInventory>(Inventories[ItemType])->GetItemData(Id);
+}
+
+FGSItemData UGSInventoryComponent::GetItemDataByIndex(int Index, EGSItemType ItemType) const
+{
+	if (!bInventoriesInitialized)
+	{
+		return FGSItemData{};
+	}
+
+	return Cast<IGSInventory>(Inventories[ItemType])->GetItemData(Index);
+}
+
+int UGSInventoryComponent::GetStacks(FName Id, EGSItemType ItemType) const
+{
+	if (!bInventoriesInitialized)
+	{
+		return 0;
+	}
+
+	return Cast<IGSInventory>(Inventories[ItemType])->GetStacks(Id);
+}
+
+int UGSInventoryComponent::GetStacksByIndex(int Index, EGSItemType ItemType) const
+{
+	if (!bInventoriesInitialized)
+	{
+		return 0;
+	}
+
+	return Cast<IGSInventory>(Inventories[ItemType])->GetStacks(Index);
 }

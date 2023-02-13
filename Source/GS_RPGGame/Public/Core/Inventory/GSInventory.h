@@ -47,4 +47,23 @@ public:
 	*/
 	virtual	bool Contains(FName Id) const = 0;
 
+	/**
+	* Returns the item data given an Id
+	*/
+	virtual FGSItemData GetItemData(FName Id) const = 0;
+
+	/**
+	* Returns the item data given an index
+	*/
+	virtual FGSItemData GetItemData(int Index) const = 0;
+
+	/**
+	* Returns the item stacks given an Id
+	*/
+	virtual unsigned int GetStacks(FName Id) const = 0;
+
+	/**
+	* Returns the item stacks given an index
+	*/
+	virtual unsigned int GetStacks(int Index) const = 0;
 };

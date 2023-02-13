@@ -13,7 +13,11 @@ void AGSEquipableObject::Equip_Implementation(APawn* InstigatorPawn)
 {
 	// TODO: Change, find a way to get the Action component without taking the casting
 	UGSActionComponent* ActionComp = Cast<AGSCharacter>(ObjOwner)->GetActionComponent();
-	ActionComp->AddAction(ObjOwner, GSEquipableTags[EquipmentType], AttributesChangeAction);
+
+	if (AttributesChangeAction)
+	{
+		ActionComp->AddAction(ObjOwner, GSEquipableTags[EquipmentType], AttributesChangeAction);
+	}
 
 	for (const auto& [Tag, ActiveAction] : ActiveActions)
 	{
@@ -26,7 +30,10 @@ void AGSEquipableObject::UnEquip_Implementation(APawn* InstigatorPawn)
 	UGSActionComponent* ActionComp = Cast<AGSCharacter>(ObjOwner)->GetActionComponent();
 	if (ActionComp)
 	{
-		ActionComp->RemoveAction(AttributesChangeAction);
+		if (AttributesChangeAction)
+		{
+			ActionComp->RemoveAction(AttributesChangeAction);
+		}
 
 		for (const auto& [Tag, ActiveAction] : ActiveActions)
 		{

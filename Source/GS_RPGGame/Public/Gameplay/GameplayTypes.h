@@ -36,7 +36,14 @@ enum class EGSEquipableType : uint8
 	SecondaryAccesory	
 };
 
-static TMap<EGSEquipableType, FGameplayTag> GSEquipableTags = { {EGSEquipableType::Head, UGameplayTagsManager::Get().RequestGameplayTag("Actions.Equipment.Head")} };
+static const TMap<EGSEquipableType, FGameplayTag> GSEquipableTags = { 
+	{EGSEquipableType::Head, UGameplayTagsManager::Get().RequestGameplayTag("Actions.Equipment.Head")},
+	{EGSEquipableType::Hands, UGameplayTagsManager::Get().RequestGameplayTag("Actions.Equipment.Hands")},
+	{EGSEquipableType::Chest, UGameplayTagsManager::Get().RequestGameplayTag("Actions.Equipment.Chest")},
+	{EGSEquipableType::Legs, UGameplayTagsManager::Get().RequestGameplayTag("Actions.Equipment.Legs")},
+	{EGSEquipableType::Feet, UGameplayTagsManager::Get().RequestGameplayTag("Actions.Equipment.Feet")},
+	{EGSEquipableType::PrimaryAccesory, UGameplayTagsManager::Get().RequestGameplayTag("Actions.Equipment.PrimaryAccesory")},
+	{EGSEquipableType::SecondaryAccesory, UGameplayTagsManager::Get().RequestGameplayTag("Actions.Equipment.SecondaryAccesory")},};
 
 /**
 * Data for an item

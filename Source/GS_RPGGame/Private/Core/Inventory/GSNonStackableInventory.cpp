@@ -50,3 +50,25 @@ UWorld* UGSNonStackableInventory::GetWorld() const
 
 	return nullptr;
 }
+
+FGSItemData UGSNonStackableInventory::GetItemData(FName Id) const
+{
+	const FGSItemData* ItemFound = Items.FindByPredicate([&Id](const FGSItemData& Item) {return Item.Id == Id; });
+
+	if (ItemFound)
+	{
+		return (*ItemFound);
+	}
+
+	return FGSItemData{};
+}
+
+FGSItemData UGSNonStackableInventory::GetItemData(int Index) const
+{
+	if (Index < Items.Num())
+	{
+		return Items[Index];
+	}
+
+	return FGSItemData{};
+}
