@@ -2,12 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
-#include "Gameplay/GameplayTypes.h"
+#include "ItemDataLoader/IGSItemDataLoader.h"
 #include "GSItemDataLoader.generated.h"
 
 class UGSActionComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquipmentLoaded, EGSEquipableType, EquipmentType);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquipmentLoaded, FGSItemDataLoadedContext, DataLoadedContext);
 
 /**
  * 
@@ -18,6 +18,8 @@ class GS_RPGGAME_API UGSItemDataLoader : public UGameInstanceSubsystem
 	GENERATED_BODY()
 	
 public:
+	UGSItemDataLoader();
+
 	bool ShouldCreateSubsystem(UObject* Outer) const override;
 
 	/**
@@ -26,11 +28,11 @@ public:
 	FGSItemData LoadItem(FName ItemId, EGSItemType ItemType) const;
 
 	/**
-	* Loads an equipmment using the Asset Manager
+	* Loads an item using the Asset Manager
 	*/
-	void LoadEquipment(FPrimaryAssetId EquipmentClassData, AActor* EquipmentOwner, EGSEquipableType EquipmentType);
+	void LoadItem(FPrimaryAssetId LoadedId, AActor* ItemOwner, FGSItemDataLoadedContext Context);
 
-	FOnEquipmentLoaded OnEquipmentLoaded;
+	FOnEquipmentLoaded OnItemLoaded;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Items")
@@ -38,7 +40,9 @@ protected:
 
 private:
 	/**
-	* Function called when the asset manager finishes loading the equipment
+	* Function called when the asset manager finishes loading the item
 	*/
-	void OnEquipmentDataLoaded(FPrimaryAssetId LoadedId, AActor* EquipmentOwner, EGSEquipableType EquipmentType) const;
+	void OnItemDataLoaded(FPrimaryAssetId LoadedId, AActor* ItemOwner, FGSItemDataLoadedContext Context) const;
+
+	TMap<EGSItemType, TUniquePtr<IGSItemDataLoader>> ItemsLoaders;
 };

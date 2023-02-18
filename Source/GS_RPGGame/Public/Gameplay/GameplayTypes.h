@@ -33,7 +33,9 @@ enum class EGSEquipableType : uint8
 	Legs,
 	Feet,
 	PrimaryAccesory,
-	SecondaryAccesory	
+	SecondaryAccesory,
+	RightHand,	// PrimaryWeapon
+	LeftHand	// SecondaryWeapon
 };
 
 static const TMap<EGSEquipableType, FGameplayTag> GSEquipableTags = { 
@@ -43,7 +45,22 @@ static const TMap<EGSEquipableType, FGameplayTag> GSEquipableTags = {
 	{EGSEquipableType::Legs, UGameplayTagsManager::Get().RequestGameplayTag("Actions.Equipment.Legs")},
 	{EGSEquipableType::Feet, UGameplayTagsManager::Get().RequestGameplayTag("Actions.Equipment.Feet")},
 	{EGSEquipableType::PrimaryAccesory, UGameplayTagsManager::Get().RequestGameplayTag("Actions.Equipment.PrimaryAccesory")},
-	{EGSEquipableType::SecondaryAccesory, UGameplayTagsManager::Get().RequestGameplayTag("Actions.Equipment.SecondaryAccesory")},};
+	{EGSEquipableType::SecondaryAccesory, UGameplayTagsManager::Get().RequestGameplayTag("Actions.Equipment.SecondaryAccesory")},
+	{EGSEquipableType::RightHand, UGameplayTagsManager::Get().RequestGameplayTag("Actions.Equipment.RightHand")},
+	{EGSEquipableType::LeftHand, UGameplayTagsManager::Get().RequestGameplayTag("Actions.Equipment.LeftHand")},
+};
+
+/**
+* Struct used to pass data to the loading function
+*/
+USTRUCT()
+struct FGSItemDataLoadedContext
+{
+	GENERATED_BODY()
+
+	EGSItemType ItemType;
+	EGSEquipableType EquipmentType;
+};
 
 /**
 * Data for an item

@@ -22,6 +22,11 @@ public:
 	void PostLoad() override;
 
 	/**
+	* Initializes the component
+	*/
+	void Init();
+
+	/**
 	* Adds a listener to an especific attribute.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
@@ -150,4 +155,6 @@ private:
 
 	TArray<TPair<FGameplayTag, FAttributeChanged>> AttributeListeners;
 	TMap<FGameplayTag, uint8> StoppedActions;
+
+	bool bIsInitialized{false};
 };

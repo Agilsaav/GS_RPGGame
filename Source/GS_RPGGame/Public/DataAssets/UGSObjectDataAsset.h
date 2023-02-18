@@ -10,7 +10,6 @@
 class AGSObject;
 class UGSAction;
 
-
 /**
  * Data Asset for the initialization of the Character
  */

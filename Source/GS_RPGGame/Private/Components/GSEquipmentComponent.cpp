@@ -1,5 +1,6 @@
 #include "Components/GSEquipmentComponent.h"
 #include "Gameplay/GSEquipable.h"
+#include "Gameplay/GSEquipableObject.h"
 
 UGSEquipmentComponent::UGSEquipmentComponent()
 {
@@ -10,14 +11,16 @@ UGSEquipmentComponent::UGSEquipmentComponent()
 	Equipment.Add(EGSEquipableType::Feet, nullptr);
 	Equipment.Add(EGSEquipableType::PrimaryAccesory, nullptr);
 	Equipment.Add(EGSEquipableType::PrimaryAccesory, nullptr);
+	Equipment.Add(EGSEquipableType::RightHand, nullptr);
+	Equipment.Add(EGSEquipableType::LeftHand, nullptr);
 }
 
-AActor* UGSEquipmentComponent::GetEquipment(EGSEquipableType EquipmentType) const
+AGSEquipableObject* UGSEquipmentComponent::GetEquipment(EGSEquipableType EquipmentType) const
 {
 	return Equipment[EquipmentType];
 }
 
-void UGSEquipmentComponent::SetEquipment(EGSEquipableType EquipmentType, AActor* NewItem)
+void UGSEquipmentComponent::SetEquipment(EGSEquipableType EquipmentType, AGSEquipableObject* NewItem)
 {
 	if (ensure(NewItem->Implements<UGSEquipable>()))
 	{
@@ -40,4 +43,24 @@ void UGSEquipmentComponent::RemoveEquipment(EGSEquipableType EquipmentType)
 bool UGSEquipmentComponent::IsSlotEquipped(EGSEquipableType EquipmentType) const
 {
 	return Equipment[EquipmentType] != nullptr;
+}
+
+AGSEquipableObject* UGSEquipmentComponent::GetPrimaryWeapon(EGSEquipableType EquipmentType) const
+{
+	return Equipment[EGSEquipableType::RightHand];
+}
+
+AGSEquipableObject* UGSEquipmentComponent::GetSecondaryWeapon(EGSEquipableType EquipmentType) const
+{
+	return Equipment[EGSEquipableType::LeftHand];
+}
+
+bool UGSEquipmentComponent::HasMainWeapon() const
+{
+	return Equipment[EGSEquipableType::RightHand] != nullptr;
+}
+
+bool UGSEquipmentComponent::HasSecondaryWeapon() const
+{
+	return Equipment[EGSEquipableType::LeftHand] != nullptr;
 }

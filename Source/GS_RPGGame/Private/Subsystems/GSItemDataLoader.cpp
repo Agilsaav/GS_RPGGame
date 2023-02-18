@@ -1,11 +1,19 @@
 #include "Subsystems/GSItemDataLoader.h"
 #include "Engine/AssetManager.h"
-#include "GSCharacter.h"
-#include "Components/GSActionComponent.h"
-#include "DataAssets/UGSObjectDataAsset.h"
-#include "Core/GSAttributesChangeAction.h"
-#include "Gameplay/GSEquipableObject.h"
-#include "Components/GSEquipmentComponent.h"
+#include "Subsystems/ItemDataLoader/GSEquipmentDataLoader.h"
+#include "Subsystems/ItemDataLoader/GSBasicItemDataLoader.h"
+
+
+UGSItemDataLoader::UGSItemDataLoader()
+{ 
+	ItemsLoaders.Emplace(EGSItemType::Armor, MakeUnique<GSEquipmentDataLoader>());
+	ItemsLoaders.Emplace(EGSItemType::Weapon, MakeUnique<GSEquipmentDataLoader>());
+	ItemsLoaders.Emplace(EGSItemType::Usable, MakeUnique<GSBasicItemDataLoader>());
+	ItemsLoaders.Emplace(EGSItemType::Resource, MakeUnique<GSBasicItemDataLoader>());
+	ItemsLoaders.Emplace(EGSItemType::Food, MakeUnique<GSBasicItemDataLoader>());
+	ItemsLoaders.Emplace(EGSItemType::Others, MakeUnique<GSBasicItemDataLoader>());
+	ItemsLoaders.Emplace(EGSItemType::KeyItem, MakeUnique<GSBasicItemDataLoader>());
+}
 
 bool UGSItemDataLoader::ShouldCreateSubsystem(UObject* Outer) const
 {
@@ -29,45 +37,17 @@ FGSItemData UGSItemDataLoader::LoadItem(FName ItemId, EGSItemType ItemType) cons
 	return FGSItemData{};
 }
 
-void UGSItemDataLoader::LoadEquipment(FPrimaryAssetId EquipmentClassData, AActor* EquipmentOwner, EGSEquipableType EquipmentType)
+void UGSItemDataLoader::LoadItem(FPrimaryAssetId LoadedId, AActor* ItemOwner, FGSItemDataLoadedContext Context)
 {
 	UAssetManager* Manager = UAssetManager::GetIfValid();
 
 	TArray<FName> Bundles;
-	FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &UGSItemDataLoader::OnEquipmentDataLoaded, EquipmentClassData, EquipmentOwner, EquipmentType);
-	Manager->LoadPrimaryAsset(EquipmentClassData, Bundles, Delegate);
+	FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &UGSItemDataLoader::OnItemDataLoaded, LoadedId, ItemOwner, Context);
+	Manager->LoadPrimaryAsset(LoadedId, Bundles, Delegate);
 }
 
-void UGSItemDataLoader::OnEquipmentDataLoaded(FPrimaryAssetId LoadedId, AActor* EquipmentOwner, EGSEquipableType EquipmentType) const
+void UGSItemDataLoader::OnItemDataLoaded(FPrimaryAssetId LoadedId, AActor* ItemOwner, FGSItemDataLoadedContext Context) const
 {
-	UAssetManager* Manager = UAssetManager::GetIfValid();
-	UGSEquipableDataAsset* EquipmentData = Cast<UGSEquipableDataAsset>(Manager->GetPrimaryAssetObject(LoadedId));
-	if (!EquipmentData)
-	{
-		return;
-	}
-
-	AGSCharacter* Character = Cast<AGSCharacter>(EquipmentOwner);
-	const FTransform SocketTransform = Character->GetMesh()->GetSocketTransform(EquipmentData->SocketName);
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParams.Instigator = Character;
-	
-	AGSEquipableObject* Equipment = GetWorld()->SpawnActor<AGSEquipableObject>(EquipmentData->Item, SocketTransform, SpawnParams);
-	Equipment->SetOwner(EquipmentOwner);
-	Equipment->AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, EquipmentData->SocketName);
-	//Equipment->SetActorRotation(Character->GetActorRotation());
-
-	UGSAttributesChangeAction* AttributesChangeAction = NewObject<UGSAttributesChangeAction>(EquipmentOwner, UGSAttributesChangeAction::StaticClass());
-	AttributesChangeAction->CreateAttributesModifications(EquipmentData->AttributesMods);
-
-	Equipment->Initialize(AttributesChangeAction, EquipmentData->ActiveActions);
-	Equipment->EquipmentType = EquipmentType;
-	Equipment->Type = EGSItemType::Armor;
-
-	//Maybe move this to the inventory and have the pointer of the obj in the inventory
-	UGSEquipmentComponent* EquipmentComp = Character->GetEquipmentComponent();
-	EquipmentComp->SetEquipment(EquipmentType, Equipment);
-
-	OnEquipmentLoaded.Broadcast(Equipment->EquipmentType);
+	ItemsLoaders[Context.ItemType]->OnItemDataLoaded(LoadedId, ItemOwner, Context);
+	OnItemLoaded.Broadcast(Context);
 }

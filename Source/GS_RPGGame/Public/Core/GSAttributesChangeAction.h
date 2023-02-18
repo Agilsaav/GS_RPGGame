@@ -14,6 +14,8 @@ class GS_RPGGAME_API UGSAttributesChangeAction : public UGSAction
 	GENERATED_BODY()
 
 public:
+	UGSAttributesChangeAction() { bAutoStart = true; };
+
 	/**
 	* Inititalize the action with the Attributes Modifications needed
 	*/

@@ -10,14 +10,24 @@ UGSActionComponent::UGSActionComponent()
 
 void UGSActionComponent::PostLoad()
 {
+	//This is only called when oppening the editor
 	Super::PostLoad();
-	AttributesSet = NewObject<UGSAttributeSet>(GetOwner(), AttributesSetClass);
+	//AttributesSet = NewObject<UGSAttributeSet>(GetOwner(), AttributesSetClass);
 }
 
 void UGSActionComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 	//AttributesSet = NewObject<UGSAttributeSet>(GetOwner(), AttributesSetClass);
+}
+
+void UGSActionComponent::Init()
+{
+	if (!bIsInitialized)
+	{
+		AttributesSet = NewObject<UGSAttributeSet>(GetOwner(), AttributesSetClass);
+		bIsInitialized = true;
+	}
 }
 
 void UGSActionComponent::BeginPlay()

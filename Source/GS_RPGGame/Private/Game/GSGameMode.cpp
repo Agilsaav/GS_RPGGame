@@ -53,7 +53,10 @@ void AGSGameMode::InititalizePlayerClass()
 		Character->GetLevelComponent()->AddLevels(ClassRow->Level - MINIMUM_LEVEL);
 
 		// I do not like this, maybe in the future find another way to do it. Maybe insted of having a float have a pairt tag,float
-		UGSAttributeSet* AttributeSet = Character->GetActionComponent()->AttributesSet;
+		UGSActionComponent* ActionComp = Character->GetActionComponent();
+		ActionComp->Init();
+		UGSAttributeSet* AttributeSet = ActionComp->AttributesSet;
+
 		AttributeSet->ResetAttributeValue(ClassRow->Health, UGameplayTagsManager::Get().RequestGameplayTag("Attributes.MaxHealth"));
 		AttributeSet->ResetAttributeValue(ClassRow->Mana, UGameplayTagsManager::Get().RequestGameplayTag("Attributes.MaxMana"));
 		AttributeSet->ResetAttributeValue(ClassRow->Mana, UGameplayTagsManager::Get().RequestGameplayTag("Attributes.Mana"));
@@ -95,18 +98,27 @@ void AGSGameMode::OnCharacterDataLoaded(FPrimaryAssetId LoadedId, AGSCharacter* 
 	}
 
 	UGSEquipmentComponent* EquipmentComp = Character->GetEquipmentComponent();
+	UGameInstance* GameInstance = Cast<UGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	UGSItemDataLoader* DataLoader = GameInstance->GetSubsystem<UGSItemDataLoader>();
+
+	// Code repetition maybe extract function
 	for (const auto& [Name, EquipmentType] : CharacterData->Equipment)
 	{
 		InventoryComp->AddItem(Name, EGSItemType::Armor);
-
-		UGameInstance* GameInstance = Cast<UGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-		UGSItemDataLoader* DataLoader = GameInstance->GetSubsystem<UGSItemDataLoader>();
 		FGSItemData EquipmentToLoad = InventoryComp->GetItemData(Name, EGSItemType::Armor);
-		DataLoader->LoadEquipment(EquipmentToLoad.ItemClassData, Character, EquipmentType);
+		FGSItemDataLoadedContext ItemContext;
+		ItemContext.ItemType = EGSItemType::Armor;
+		ItemContext.EquipmentType = EquipmentType;
+		DataLoader->LoadItem(EquipmentToLoad.ItemClassData, Character, ItemContext);
 	}
 
 	for (const auto& [Name, EquipmentType] : CharacterData->Weapons)
 	{
 		InventoryComp->AddItem(Name, EGSItemType::Weapon);
+		FGSItemData EquipmentToLoad = InventoryComp->GetItemData(Name, EGSItemType::Weapon);
+		FGSItemDataLoadedContext ItemContext;
+		ItemContext.ItemType = EGSItemType::Weapon;
+		ItemContext.EquipmentType = EquipmentType;
+		DataLoader->LoadItem(EquipmentToLoad.ItemClassData, Character, ItemContext);
 	}
 }

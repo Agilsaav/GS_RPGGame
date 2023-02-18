@@ -38,7 +38,7 @@ public:
 	/**
 	* Returns wheter the inventory contaisn the object by id.
 	*/
-	[[nodiscard]] bool Contains(FName Id) const override;
+	UE_NODISCARD bool Contains(FName Id) const override;
 
 	/**
 	* Returns the item data given an Id
